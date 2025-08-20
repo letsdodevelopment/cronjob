@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  creationTimestamp: null
+  name: maintNode
+spec:
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+      name: maintNode
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+        spec:
+          containers:
+          - image: quay.io/openshift/origin-cli:4.14
+            name: maintNode
+            resources: {}
+            volumeMounts:
+              - name: maintscript-vol
+                path: /opt
+          restartPolicy: OnFailure
+          volumes:
+            - name: maintscript-vol
+              configMap:
+                - name: nodemaintenance 
+                  defaultMode: 0555
+  schedule: 0 * * * * # every hour
+status: {}

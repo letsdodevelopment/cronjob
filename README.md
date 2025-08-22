@@ -81,8 +81,21 @@ we need to assign scc as well. Why?
 
 `oc adm policy add-scc-to-user privileged -z cronjob-svv` 
 
-now add this service account to the cronjob using
-serviceAccountName: cronjob-svv
+now add this service account to the cronjob using the following steps
+```shell
+oc delete -f cjdeleteimages.yaml
 
+# I have create a branch step02, so that main cjdeleteimages.yaml remains
+# intact, once you move to branch step02, you will see
+# the key,value pair of serviceAccountName populated.
+
+git branch step02
+
+# check the serviceAccountName is populated with
+# the right service name
+
+oc logs pod/cjdeleteimages-29264456-qs4cz
+# You will see the output crictl images
+```
 
 

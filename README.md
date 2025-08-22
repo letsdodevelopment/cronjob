@@ -84,5 +84,7 @@ we need to assign scc as well. Why?
 now add this service account to the cronjob using
 serviceAccountName: cronjob-svv
 
-
+Now to follow next steps, you must switch the branch 
+using `git switch step02` or from Github
+interface.
 

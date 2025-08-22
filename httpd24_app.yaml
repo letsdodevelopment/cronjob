@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"httpd24-app","creationTimestamp":null,"labels":{"app":"httpd24-app"}},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"httpd24-app"}},"template":{"metadata":{"creationTimestamp":null,"labels":{"app":"httpd24-app"}},"spec":{"containers":[{"name":"httpd-24","image":"registry.redhat.io/ubi9/httpd-24","resources":{}}]}},"strategy":{}},"status":{}}
+  creationTimestamp: null
+  labels:
+    app: httpd24-app
+  name: httpd24-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: httpd24-app
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: httpd24-app
+    spec:
+      containers:
+      - image: registry.redhat.io/ubi9/httpd-24
+        name: httpd-24
+        ports:
+          - containerPort: 8080
+            protocol: TCP
+        resources: {}
+status: {}

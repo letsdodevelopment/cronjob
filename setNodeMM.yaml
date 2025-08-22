@@ -16,6 +16,8 @@ spec:
           containers:
           - image: quay.io/openshift/origin-cli:4.14
             name: maintNode
+            command:
+              - /opt/maintenanceMode.sh
             resources: {}
             volumeMounts:
               - name: maintscript-vol

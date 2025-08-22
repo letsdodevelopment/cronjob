@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cjdeleteimages
+spec:
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+      name: cjdeleteimages
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+        spec:
+          containers:
+            - image: quay.io/openshift/origin-cli:4.14
+              name: cjdeleteimages
+              resources: {}
+              command:
+                - /opt/deleteimages.sh
+              volumeMounts:
+                - name: cjvolume
+                  mountPath: /opt
+          restartPolicy: OnFailure
+          volumes:
+            - name: cjvolume
+              configMap:
+                name: cmdeleteimages
+                defaultMode: 0555
+  schedule: '*/1 * * * *'
+status: {}

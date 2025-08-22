@@ -2,17 +2,18 @@
 
 ## Step2
 
-- create a new project using admin role
+- Create a new project using admin role
 `oc new-project application-space`
 
-- create a 3x sample httpd app using httpd24_app.yaml
+- Create a 3x sample httpd app using httpd24_app.yaml
+
 ```shell
     oc create -f httpd24_app.yaml
     sed -e 's/registry.redhat.io\/ubi9\/httpd-24/registry.redhat.io\/ubi9\/httpd-24:1-1731599989/g' -e 's/httpd24-app/httpd24-app-v1/g' httpd24_app.yaml | oc create -f - 
     sed -e 's/registry.redhat.io\/ubi9\/httpd-24/registry.redhat.io\/ubi9\/httpd-24:1-1733127463/g' -e 's/httpd24-app/httpd24-app-v2/g' httpd24_app.yaml | oc create -f -
     # we end of create 3 httpd apps using different versions. This helps us populate images
     # when we run crictl images
-        oc get deploy -o wide                                                                                                                                                                                                                                                                 ─╯
+        oc get deploy -o wide
         NAME             READY   UP-TO-DATE   AVAILABLE   AGE     CONTAINERS   IMAGES                                          SELECTOR
         httpd24-app      1/1     1            1           26m     httpd-24     registry.redhat.io/ubi9/httpd-24                app=httpd24-app
         httpd24-app-v1   1/1     1            1           8m3s    httpd-24     registry.redhat.io/ubi9/httpd-24:1-1731599989   app=httpd24-app-v1
@@ -27,10 +28,15 @@
         registry.redhat.io/ubi9/httpd-24                                               latest              6e0650b7b0221       312MB
 ```
 
-create a simple bash script to run against node (e.g.deleteimages.sh)
+Create a simple bash script to run against node (e.g.deleteimages.sh)
     - e.g. list images and then prune old images
-- create a configmap using --from-file
-`oc create configmap cmdeleteimages --from-file=deleteimages.sh=deleteimages.sh -o yaml --validate=true --dry-run=client > cmdeleteimages.yaml`
+- Create a configmap using --from-file
+
+```shell
+oc create configmap cmdeleteimages \
+--from-file=deleteimages.sh=deleteimages.sh -o yaml \
+--validate=true --dry-run=client > cmdeleteimages.yaml
+```
 
 The above command gives us an output in yaml which could be used for 
 further customization. Now, create a cm using the following command
@@ -41,12 +47,11 @@ further customization. Now, create a cm using the following command
 
 `oc create cronjob cjdeleteimages --dry-run=client -o yaml --image quay.io/openshift/origin-cli --schedule='*/5 * * * *' > cjdeleteimages.yaml`
 
-Now there is work to do here. We need to update this file to use configmap
+Now there is work to done here. We need to update this file to use configmap
 and we also need to add `command` describing where
 the script is located.
 
-
-once it done, execute the cronjob using the following command
+Once it done, execute the cronjob using the following command
 
 `oc create --save-config -f cjdeleteimages.yaml`
 
@@ -63,7 +68,8 @@ cjdeleteimages   */1 * * * *   <none>     False     0        42s             3m5
 # all looks okay but check the logs
 oc logs pods/cjdeleteimages-29264379-6g7vf
 
-Error from server (Forbidden): nodes is forbidden: User "system:serviceaccount:applications-space:default" cannot list resource "nodes" in API group "" at the cluster scope
+Error from server (Forbidden): nodes is forbidden: User "system:serviceaccount:applications-space:default" 
+cannot list resource "nodes" in API group "" at the cluster scope
 
 # This error we need to resolve.
 # From the error message it is clear
@@ -73,15 +79,15 @@ Error from server (Forbidden): nodes is forbidden: User "system:serviceaccount:a
 
 `oc create serviceaccount cronjob-svv`
 
-assign permissions to the service account,
+Assign permissions to the service account,
 
 `oc adm policy add-cluster-role-to-user cluster-admin -z cronjob-svv`
 
-we need to assign scc as well. Why?
+We need to assign scc as well. Why?
 
 `oc adm policy add-scc-to-user privileged -z cronjob-svv` 
 
-now add this service account to the cronjob using the following steps
+Now add this service account to the cronjob using the following steps
 ```shell
 # Lets first delete the existing cronjob
 

@@ -18,7 +18,7 @@
         httpd24-app-v1   1/1     1            1           8m3s    httpd-24     registry.redhat.io/ubi9/httpd-24:1-1731599989   app=httpd24-app-v1
         httpd24-app-v2   1/1     1            1           7m19s   httpd-24     registry.redhat.io/ubi9/httpd-24:1-1733127463   app=httpd24-app-v2
 
-     oc debug nodes/crc -- chroot /host /bin/bash -c 'crictl images | grep httpd-24'                                                                               󱃾 applications-space/api-crc-testing:6443/kubeadmin/applications-space 12:54:09
+     oc debug nodes/crc -- chroot /host /bin/bash -c 'crictl images | grep httpd-24
         Temporary namespace openshift-debug-p2png is created for debugging node...
         Starting pod/crc-debug-2znfc ...
         To use host binaries, run `chroot /host`
@@ -83,19 +83,25 @@ we need to assign scc as well. Why?
 
 now add this service account to the cronjob using the following steps
 ```shell
+# Lets first delete the existing cronjob
+
 oc delete -f cjdeleteimages.yaml
 
 # I have create a branch step02, so that main cjdeleteimages.yaml remains
-# intact, once you move to branch step02, you will see
+# intact, Once you switch to branch step02, you will see
 # the key,value pair of serviceAccountName populated.
 
 git branch step02
 
 # check the serviceAccountName is populated with
-# the right service name
+# the right service name,if not modified it.
+# lets recreate cronjob again
+
+oc create -f cjdeleteimages.yaml
 
 oc logs pod/cjdeleteimages-29264456-qs4cz
 # You will see the output crictl images
+
 ```
 
 
